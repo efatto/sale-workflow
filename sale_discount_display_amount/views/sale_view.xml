@@ -7,7 +7,7 @@
         <field name="priority">99</field>
         <field name="arch" type="xml">
             <data>
-                <xpath expr="//field[@name='amount_tax']" position="before">
+                <xpath expr="//field[@name='amount_untaxed']" position="before">
                     <field name="price_subtotal_no_discount" />
                     <field name="price_total_no_discount" />
                     <field name="discount_total"/>
