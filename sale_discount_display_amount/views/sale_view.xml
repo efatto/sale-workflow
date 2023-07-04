@@ -8,7 +8,8 @@
         <field name="arch" type="xml">
             <data>
                 <xpath expr="//field[@name='amount_tax']" position="after">
-                    <field name="price_total_no_discount"/>
+                    <field name="price_subtotal_no_discount" optional="hide" />
+                    <field name="price_total_no_discount" optional="hide" />
                     <field name="discount_total"/>
                 </xpath>
             </data>
