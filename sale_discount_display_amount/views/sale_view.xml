@@ -8,9 +8,10 @@
         <field name="arch" type="xml">
             <data>
                 <xpath expr="//field[@name='amount_untaxed']" position="before">
-                    <field name="price_subtotal_no_discount" />
-                    <field name="price_total_no_discount" />
-                    <field name="discount_total"/>
+                    <field name="price_subtotal_no_discount" groups="account.group_show_line_subtotals_tax_excluded" />
+                    <field name="discount_subtotal" groups="account.group_show_line_subtotals_tax_excluded" />
+                    <field name="price_total_no_discount" groups="account.group_show_line_subtotals_tax_included" />
+                    <field name="discount_total" groups="account.group_show_line_subtotals_tax_included" />
                 </xpath>
             </data>
         </field>
