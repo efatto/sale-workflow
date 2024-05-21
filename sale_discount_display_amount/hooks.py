@@ -3,25 +3,25 @@
 import logging
 from odoo.api import Environment
 from odoo import SUPERUSER_ID
+from odoo.tools.sql import column_exists, create_column
 
 _logger = logging.getLogger(__name__)
 
+COLUMNS = (
+    ("sale_order", "price_total_no_discount"),
+    ("sale_order", "discount_total"),
+    ("sale_order", "price_subtotal_no_discount"),
+    ("sale_order_line", "price_subtotal_no_discount"),
+    ("sale_order_line", "price_total_no_discount"),
+    ("sale_order_line", "discount_total"),
+)
+
 
 def pre_init_hook(cr):
-    _logger.info("Create discount columns in database")
-    cr.execute("""
-        ALTER TABLE sale_order ADD COLUMN price_total_no_discount numeric;
-    """)
-    cr.execute("""
-        ALTER TABLE sale_order ADD COLUMN discount_total numeric;
-    """)
-    cr.execute("""
-        ALTER TABLE sale_order_line ADD COLUMN price_total_no_discount
-        numeric;
-    """)
-    cr.execute("""
-        ALTER TABLE sale_order_line ADD COLUMN discount_total numeric;
-    """)
+    for table, column in COLUMNS:
+        if not column_exists(cr, table, column):
+            _logger.info("Create discount column %s in database", column)
+            create_column(cr, table, column, "numeric")
 
 
 def post_init_hook(cr, registry):
@@ -30,15 +30,19 @@ def post_init_hook(cr, registry):
 
     query = """
     update sale_order_line
-    set price_total_no_discount = price_total
+    set
+        price_subtotal_no_discount = price_subtotal,
+        price_total_no_discount = price_total
     where discount = 0.0
     """
     cr.execute(query)
 
     query = """
-        update sale_order
-        set price_total_no_discount = amount_total
-        """
+    update sale_order
+    set
+        price_subtotal_no_discount = amount_untaxed,
+        price_total_no_discount = amount_total
+    """
     cr.execute(query)
 
     query = """
