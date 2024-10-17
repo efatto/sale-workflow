@@ -9,6 +9,9 @@ class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
 
     discount_total = fields.Monetary(
+        compute="_compute_amount", string="Discount total", store=True
+    )
+    discount_subtotal = fields.Monetary(
         compute='_compute_amount',
         string='Discount Subtotal',
         store=True)
@@ -19,7 +22,7 @@ class SaleOrderLine(models.Model):
     )
     price_total_no_discount = fields.Monetary(
         compute='_compute_amount',
-        string='Subtotal Without Discount',
+        string='Total Without Discount',
         store=True)
 
     def _compute_discount(self):
@@ -39,9 +42,11 @@ class SaleOrderLine(models.Model):
             price_subtotal_no_discount = taxes['total_excluded']
             price_total_no_discount = taxes['total_included']
             discount_total = price_total_no_discount - line.price_total
+            discount_subtotal = price_subtotal_no_discount - line.price_subtotal
 
             line.update({
                 'discount_total': discount_total,
+                "discount_subtotal": discount_subtotal,
                 'price_subtotal_no_discount': price_subtotal_no_discount,
                 'price_total_no_discount': price_total_no_discount
             })
